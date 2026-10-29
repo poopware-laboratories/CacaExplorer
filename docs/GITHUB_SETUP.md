@@ -1,6 +1,6 @@
 # GitHub setup
 
-This directory is a standalone Git repository. The GitHub repository has not been created or pushed yet. Choose its owner and visibility before publishing.
+This directory is the standalone source repository for [poopware-laboratories/CacaExplorer](https://github.com/poopware-laboratories/CacaExplorer). The first hosted APK build has passed.
 
 ## Create and push
 
@@ -22,7 +22,7 @@ The key remains local and in GitHub's encrypted secret store. It is a developmen
 
 ## Build and download
 
-The **Build APK** workflow runs for pushes to main and codex branches, v-prefixed tags, pull requests, and manual dispatches. Open **Actions → Build APK → a successful run → Artifacts** to download the ZIP containing the APK and its SHA-256 checksum. It does not create a GitHub Release or publish to an app store.
+The **Build APK** workflow runs for pushes to main and codex branches, v-prefixed tags, pull requests, and manual dispatches. Open **Actions → Build APK → a successful run → Artifacts** to download the ZIP containing the APK and its SHA-256 checksum. Normal builds remain Actions artifacts. Version-tag builds and manual runs with a release tag also publish the APK and checksum to GitHub Releases.
 
 After the first push, a manual build can also be started with:
 
@@ -36,4 +36,17 @@ Pull-request builds intentionally use temporary signing keys and have no access 
 
 The workflow uses an Ubuntu 24.04 x86_64 runner, Temurin JDK 21, API 13 stubs, build tools 30.0.3, and R8/D8 8.3.37. It runs all host tests, checks downloads against pinned SHA-256 hashes, compiles only against Honeycomb APIs, verifies legacy v1 APK signing for API 13, and uploads the result for 30 days. Actions are pinned to commit hashes and the job has read-only repository permissions.
 
-The workflow is prepared and local builds have passed. A hosted GitHub Actions run still needs to be verified after publishing.
+## Publish downloadable APK releases
+
+Open **Actions → Build APK → Run workflow**, select `main`, and enter `v0.1.1` in **release_tag**. After tests and signing verification pass, the workflow creates that tag at the built commit and publishes a GitHub Release with the APK and checksum as direct downloads. Leave release_tag empty for an ordinary test build.
+
+Alternatively, push a version tag:
+
+```sh
+git tag v0.1.2
+git push origin v0.1.2
+```
+
+Tags must use `vMAJOR.MINOR.PATCH`, optionally followed by `-alpha.N`, `-beta.N`, or `-rc.N`. Such suffixes create GitHub prereleases. The APK version name matches the tag without `v`, while version codes keep increasing using this workflow's shared run number. Set the stable signing secret described above before distributing APKs intended to update one another; otherwise each fresh runner generates a temporary key.
+
+Release creation runs in a separate job with repository write permission, after the read-only build job succeeds. Reruns leave existing releases unchanged. Manual runs refuse to publish if the requested tag already points to a different commit. Releases in a private repository remain accessible only to people who can access that repository. This workflow does not publish to an app store.

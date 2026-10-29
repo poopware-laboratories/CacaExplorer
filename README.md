@@ -41,7 +41,7 @@ Requires JDK 21, Python 3, curl, unzip, and zip. `setup-sdk.sh` downloads pinned
 
 The scripts honor `JAVA_HOME` or `CACA_JAVA_HOME`; Homebrew JDK 21 is also detected. Set `CACA_SDK_ROOT`, `ANDROID_JAR`, `ANDROID_BUILD_TOOLS`, or `CACA_R8_JAR` to override individual SDK locations. Build output goes to ignored `dist/` inside this repository, alongside its SHA-256 checksum. The filename follows `versionName` in AndroidManifest.xml.
 
-[GitHub setup instructions](docs/GITHUB_SETUP.md) cover repository creation, signing, and running the included APK workflow. The workflow builds on pushes, pull requests, and manual dispatches and uploads an APK artifact.
+[GitHub setup instructions](docs/GITHUB_SETUP.md) cover repository creation, signing, and running the included APK workflow. The workflow builds on pushes, pull requests, and manual dispatches and uploads an APK artifact. Version tags or manual runs with a release tag publish the APK and checksum to GitHub Releases.
 
 The APK is signed with a local development key stored in the ignored `.private/debug.keystore` directory. Preserve that key for compatible updates. Development signing is verified for API 13 with the legacy JAR/v1 scheme. No release key or credentials are committed.
 
