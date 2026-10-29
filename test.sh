@@ -7,3 +7,5 @@ javac -d build/tests src/org/poopware/cacaexplorer/FileOps.java src/org/poopware
 java -cp build/tests FileOpsTest
 java -cp build/tests ArchiveOpsTest
 java -cp build/tests org.poopware.cacaexplorer.ThemeCatalogTest
+
+python3 -m unittest discover -s tests -p "test_*.py"

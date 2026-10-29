@@ -18,6 +18,13 @@ fi
 rm -rf build/classes build/dex build/generated
 mkdir -p build/classes build/dex build/generated .private dist
 "$TOOLS/aapt" package -f -M AndroidManifest.xml -S res -I "$PLATFORM" -J build/generated -F build/unsigned.apk
+python3 - <<'INFO'
+import json, pathlib
+name = json.load(open('version.json'))['codename']
+path = pathlib.Path('build/generated/org/poopware/cacaexplorer/BuildInfo.java')
+path.parent.mkdir(parents=True, exist_ok=True)
+path.write_text('package org.poopware.cacaexplorer; final class BuildInfo { static final String CODENAME = ' + json.dumps(name) + '; }')
+INFO
 find src build/generated -name '*.java' > build/sources.txt
 javac -source 8 -target 8 -bootclasspath "$PLATFORM" -d build/classes @build/sources.txt
 jar cf build/classes.jar -C build/classes .

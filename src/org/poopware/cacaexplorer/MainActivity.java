@@ -161,6 +161,7 @@ public class MainActivity extends Activity {
     void updateClipboard(){if(paste==null||clipboardBanner==null)return;int count=features.clipboardCount();paste.setText(count>0?"Paste ("+count+")":"Paste");styleButton(paste,count>0);paste.setEnabled(!busy);clipboardBanner.setVisibility(count>0?View.VISIBLE:View.GONE);clipboardBanner.setText(features.clipboardDescription()+"  →  "+current.getPath()+"\nBrowse to a destination, then tap Paste. Tap this bar to clear.");}
     private void paste(){if(features.hasBatch()){if(features.recents){error("Open a destination folder before pasting.");return;}features.pasteBatch();return;}new AlertDialog.Builder(this).setTitle("Paste files").setMessage("Hold a file and choose Copy or Move, open the destination folder, then tap Paste in the toolbar. For multiple files, use Select.").setPositiveButton("OK",null).show();}
     private void newFolder(){final File parent=current;prompt("New folder","",new NameAction(){public void run(String name)throws Exception{final File f=FileOps.named(parent,name);job("Creating folder…",new Work(){public void run()throws Exception{if(!f.mkdir())throw new IOException("Cannot create folder; check the name, permissions, or existing files.");}});}});}
+    String versionLabel(){try{return getPackageManager().getPackageInfo(getPackageName(),0).versionName;}catch(Exception e){return "unknown";}}
     private void more(){features.more();}
     void toggleHidden(){hidden=!hidden;refresh();}
     interface NameAction{void run(String name)throws Exception;}

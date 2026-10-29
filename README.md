@@ -34,7 +34,7 @@ From the root of this standalone repository:
 sh setup-sdk.sh
 sh test.sh
 sh build.sh
-adb install -r dist/CacaExplorer-0.1.1.apk
+adb install -r dist/CacaExplorer-26.10.0.apk
 ```
 
 Requires JDK 21, Python 3, curl, unzip, and zip. `setup-sdk.sh` downloads pinned official Google archives (API 13 stubs, build tools 30.0.3, and R8/D8 8.3.37), verifies their SHA-256 hashes, and keeps them in ignored `.work/honeycomb-sdk`. No Gradle or preinstalled Android SDK is required. Supported hosts: Linux x86_64 and macOS; Apple Silicon requires Rosetta for the native SDK tools.
@@ -54,3 +54,7 @@ This is an initial alpha, with a substantial feature set rather than a claim of 
 Recursive search/recents are bounded to 20,000 visited directories and 1,000 results; recent results are sorted within the collected set. Text previews stop at 256 KiB. ZIP extraction is limited to 1 GiB and 20,000 entries and refuses path traversal, duplicates, and existing extraction folders. ZIPs do not preserve Unix permissions or symlinks. Symbolic links are not supported by destructive or archive operations. Normal Android application permissions apply; protected system folders may be readable but cannot be changed.
 
 AI-assisted implementation, directed by the owner of Poopterm. CacaExplorer is licensed under AGPL-3.0-or-later, matching Poopterm; see LICENSE. This subproject is separate from the NuraXoom boot image.
+
+## Versioning
+
+Like Poopterm: **YEAR.MONTH.PATCH**, such as `26.10.0`, with a random monthly codename. Patches increment within the month and reset to 0 next month. CacaExplorer keeps its own counter. `version.json` holds the version and codename; `python3 tools/version.py --next` prepares the next release and synchronizes the Android manifest. About, APK filenames, and release titles use this version. The initial monthly series is **26.10 — Lunar Gecko**.

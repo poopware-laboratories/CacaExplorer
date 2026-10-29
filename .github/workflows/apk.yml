@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: 'Optional release version, e.g. v0.1.1 (leave empty for a test APK)'
+        description: 'Optional release version, e.g. v26.10.0 (leave empty for a test APK)'
         type: string
         required: false
         default: ''
@@ -26,6 +26,7 @@ jobs:
     timeout-minutes: 20
     outputs:
       release_tag: ${{ steps.version.outputs.release_tag }}
+      codename: ${{ steps.version.outputs.codename }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -39,25 +40,16 @@ jobs:
         env:
           REQUESTED_TAG: ${{ inputs.release_tag }}
         run: |
-          python3 - <<'PY'
-          import os, re
-          import xml.etree.ElementTree as E
-          E.register_namespace('android', 'http://schemas.android.com/apk/res/android')
-          tree = E.parse('AndroidManifest.xml')
-          root = tree.getroot()
-          prefix = '{http://schemas.android.com/apk/res/android}'
-          number = int(os.environ['GITHUB_RUN_NUMBER'])
-          tag = os.environ.get('REQUESTED_TAG', '')
-          if os.environ['GITHUB_REF'].startswith('refs/tags/'):
-              tag = os.environ['GITHUB_REF_NAME']
-          if tag and not re.fullmatch(r'v(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)(?:-(?:alpha|beta|rc)\.[0-9]+)?', tag):
-              raise SystemExit('Release tag must be vMAJOR.MINOR.PATCH, optionally -alpha.N, -beta.N, or -rc.N')
-          with open(os.environ['GITHUB_OUTPUT'], 'a') as out:
-              out.write('release_tag=' + tag + '\n')
-          root.set(prefix + 'versionCode', str(100000 + number))
-          root.set(prefix + 'versionName', tag[1:] if tag else root.get(prefix + 'versionName') + '-ci.' + str(number))
-          tree.write('AndroidManifest.xml', encoding='utf-8', xml_declaration=True)
-          PY
+          tag="$REQUESTED_TAG"
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then tag="$GITHUB_REF_NAME"; fi
+          if [[ -n "$tag" ]]; then
+            python3 tools/version.py --tag "$tag"
+          else
+            python3 tools/version.py --ci "$GITHUB_RUN_NUMBER"
+          fi
+          printf 'release_tag=%s\n' "$tag" >> "$GITHUB_OUTPUT"
+          codename=$(python3 -c 'import json; print(json.load(open("version.json"))["codename"])')
+          printf 'codename=%s\n' "$codename" >> "$GITHUB_OUTPUT"
       - name: Run filesystem, archive and theme tests
         run: sh test.sh
       - name: Install checksum-pinned SDK dependencies
@@ -102,6 +94,7 @@ jobs:
       RUN_ID: ${{ github.run_id }}
       ARTIFACT_NAME: CacaExplorer-apk-${{ github.run_number }}
       TARGET_SHA: ${{ github.sha }}
+      CODENAME: ${{ needs.build.outputs.codename }}
     steps:
       - name: Download verified APK and checksum
         run: gh run download "$RUN_ID" --name "$ARTIFACT_NAME" --dir release-assets
@@ -122,5 +115,5 @@ jobs:
           extra=()
           if [[ "$RELEASE_TAG" == *-* ]]; then extra+=(--prerelease); fi
           gh release create "$RELEASE_TAG" release-assets/*.apk release-assets/*.sha256 \
-            --target "$TARGET_SHA" --title "CacaExplorer ${RELEASE_TAG#v}" \
+            --target "$TARGET_SHA" --title "CacaExplorer ${RELEASE_TAG#v} — $CODENAME" \
             --generate-notes "${extra[@]}"
