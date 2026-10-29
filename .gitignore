@@ -1,0 +1,10 @@
+/build/
+/dist/
+/.work/
+/.private/
+*.keystore
+*.jks
+*.apk
+*.idsig
+.DS_Store
+__pycache__/
