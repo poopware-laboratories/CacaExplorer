@@ -57,4 +57,4 @@ AI-assisted implementation, directed by the owner of Poopterm. CacaExplorer is l
 
 ## Versioning
 
-Like Poopterm: **YEAR.MONTH.PATCH**, such as `26.10.0`, with a random monthly codename. Patches increment within the month and reset to 0 next month. CacaExplorer keeps its own counter. `version.json` holds the version and codename; `python3 tools/version.py --next` prepares the next release and synchronizes the Android manifest. About, APK filenames, and release titles use this version. The initial monthly series is **26.10 — Lunar Gecko**.
+Like Poopterm: **YEAR.MONTH.PATCH**, such as `26.10.0`, with a random monthly codename. Patches increment within the month and reset to 0 next month. CacaExplorer keeps its own counter. `version.json` holds the version and codename; `python3 tools/version.py --next` prepares the next release and synchronizes the Android manifest. About, APK filenames, and release titles use this version. The initial monthly series is **26.10 — GigaFly**.

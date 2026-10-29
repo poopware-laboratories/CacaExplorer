@@ -20,7 +20,7 @@ class VersionTests(unittest.TestCase):
         with self.assertRaises(ValueError): v.next_version('26.10.9999', datetime.date(2026,10,29))
 
     def test_monthly_codenames(self):
-        data = {'version':'26.10.1', 'codename':'Lunar Gecko'}
+        data = {'version':'26.10.1', 'codename':'GigaFly'}
         self.assertEqual(v.prepare(data,'26.10.2')['codename'],data['codename'])
         changed = v.prepare(data,'26.11.0')
         self.assertNotEqual(changed['codename'],data['codename'])
@@ -42,7 +42,7 @@ class VersionTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory)
             (root/'AndroidManifest.xml').write_text('<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="org.test" android:versionName="0.1.1" android:versionCode="2"/>')
-            data={'version':'26.10.0','codename':'Lunar Gecko'}
+            data={'version':'26.10.0','codename':'GigaFly'}
             v.apply(root,data,ci=8)
             attrs=E.parse(root/'AndroidManifest.xml').getroot().attrib
             self.assertEqual(attrs[v.PREFIX+'versionName'],'26.10.0-ci.8')
